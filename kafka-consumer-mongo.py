@@ -8,7 +8,7 @@ from pymongo.server_api import ServerApi
 
 import json
 
-uri = "mongodb+srv://adsoft:adsoft-sito@cluster0.kzghgph.mongodb.net/?retryWrites=true&w=majority"
+uri = 'mongodb+srv://zurisaddairj:mongo_Atlas.1102@books.hgiw0w5.mongodb.net/?retryWrites=true&w=majority'
 
 # Create a new client and connect to the server
 #client = MongoClient(uri, server_api=ServerApi('1'))
@@ -27,12 +27,12 @@ try:
     client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
 
-    db = client.memes
+    db = client.books
     print("MongoDB Connected successfully!")
 except:
     print("Could not connect to MongoDB")
 
-consumer = KafkaConsumer('test',bootstrap_servers=['my-kafka-0.my-kafka-headless.kafka-adsoftsito.svc.cluster.local:9092'])
+consumer = KafkaConsumer('test',bootstrap_servers=['book-kafka-0.book-kafka-headless.zurisaddairj.svc.cluster.local:9092'])
 # Parse received data from Kafka
 for msg in consumer:
     record = json.loads(msg.value)
@@ -41,9 +41,9 @@ for msg in consumer:
 
     # Create dictionary and ingest data into MongoDB
     try:
-       meme_rec = {'name':name }
-       print (meme_rec)
-       meme_id = db.memes_info.insert_one(meme_rec)
-       print("Data inserted with record ids", meme_id)
+       books_rec = {'name':name }
+       print (books_rec)
+       books_id = db.books_info.insert_one(books_rec)
+       print("Data inserted with record ids", books_id)
     except:
        print("Could not insert into MongoDB")
