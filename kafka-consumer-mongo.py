@@ -10,6 +10,7 @@ import json
 
 uri = 'mongodb+srv://zurisaddairj:mongo_Atlas.1102@books.hgiw0w5.mongodb.net/?retryWrites=true&w=majority'
 
+
 # Create a new client and connect to the server
 #client = MongoClient(uri, server_api=ServerApi('1'))
 # Send a ping to confirm a successful connection
