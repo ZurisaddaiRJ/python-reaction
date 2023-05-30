@@ -33,7 +33,7 @@ try:
 except:
     print("Could not connect to MongoDB")
 
-consumer = KafkaConsumer('test',bootstrap_servers=[
+consumer = KafkaConsumer('reactions',bootstrap_servers=[
     #'localhost:9092'])
     'book-kafka-0.book-kafka-headless.zurisaddairj.svc.cluster.local:9092'])
   
@@ -45,32 +45,42 @@ consumer = KafkaConsumer('test',bootstrap_servers=[
 for msg in consumer:
     record = json.loads(msg.value)
     print(record)
-    name = record['name']
+    userId = record["userId"]
+    objectId = record["objectId"]
+    reactionId = record["reactionId"]
+    
 
     #count
 
     # Create dictionary and ingest data into MongoDB
     try:
-       books_rec = {'name':name }
-       print (books_rec)
-       books_id = db.books_info.insert_one(books_rec)
-       print("Data inserted with record ids", books_id)
+       reaction_rec = {
+         'userId': userId,
+         'objectId': objectId,
+         'reactionId': reactionId
+       }
+       print (reaction_rec)
+       reaction_id = db.books_reactions.insert_one(reaction_rec)
+       print("Data inserted with record ids", reaction_id)
     except:
        print("Could not insert into MongoDB")
 
     try:
-       agg_result=db.books_info.aggregate(
+       agg_result=db.books_reactions.aggregate(
        [{
-         "$group":
-         {  "_id": "$name",
-            "n"   : {"$sum": 1}
+         "$group" : 
+         {  "_id" : {
+               "objectId": "$objectId",
+               "reactionId": "$reactionId"
+            }, 
+            "n"    : {"$sum": 1}
          }}
        ])
        db.books_summary.delete_many({})
        for i in agg_result:
          print(i)
-         summary_id= db.books_summary.insert_one(i)
-         print("Summary inserted  with record  ids",summary_id)
+         summary_id= db.books_summaryreactions.insert_one(i)
+         print("Reaction inserted  with record  ids",summary_id)
     except Exception as e:
        print(f'group by caught {type(e)}: ')
        print(e)
